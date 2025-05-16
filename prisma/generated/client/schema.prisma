@@ -1,0 +1,231 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN     @map("ADMIN")
+  APPROVER  @map("APPROVER")
+  INITIATOR @map("INITIATOR")
+}
+
+enum DocumentStatus {
+  PENDING            @map("PENDING")
+  IN_PROGRESS        @map("IN_PROGRESS")
+  APPROVED           @map("APPROVED")
+  REJECTED           @map("REJECTED")
+  REVISION_REQUESTED @map("REVISION_REQUESTED")
+}
+
+enum ApprovalStatus {
+  PENDING            @map("PENDING")
+  APPROVED           @map("APPROVED")
+  REJECTED           @map("REJECTED")
+  REVISION_REQUESTED @map("REVISION_REQUESTED")
+}
+
+enum NotificationType {
+  APPROVAL_REQUEST @map("APPROVAL_REQUEST")
+  APPROVAL_ACTION  @map("APPROVAL_ACTION")
+  COMMENT          @map("COMMENT")
+  SYSTEM           @map("SYSTEM")
+}
+
+enum AuditAction {
+  CREATED   @map("CREATED")
+  APPROVED  @map("APPROVED")
+  REJECTED  @map("REJECTED")
+  COMMENTED @map("COMMENTED")
+  MODIFIED  @map("MODIFIED")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  password   String
+  firstName  String
+  lastName   String
+  department String   @default("Unknown")
+  isVerified Boolean  @default(false)
+  isAdmin    Boolean  @default(false)
+  role       Role     @default(INITIATOR)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  documents     Document[]     @relation("UserInitiatedDocs")
+  approvals     Approval[]     @relation("UserApprovals")
+  comments      Comment[]
+  notifications Notification[]
+  templates     Template[]
+  templateSteps TemplateStep[]
+  auditTrail    Audit[]
+}
+
+model Document {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  file        Bytes
+  fileName    String? // <-- Make this optional
+  fileType    String
+  amount      Float?
+  type        String?
+  status      DocumentStatus @default(PENDING)
+
+  initiator   User   @relation("UserInitiatedDocs", fields: [initiatorId], references: [id])
+  initiatorId String
+
+  approvals    Approval[]
+  comments     Comment[]
+  auditTrail   Audit[]
+  templateUsed Template?  @relation(fields: [templateId], references: [id])
+  templateId   String?
+  capexForm    CapexForm?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+
+  @@index([initiatorId])
+}
+
+model Approval {
+  id            String         @id @default(cuid())
+  sequenceOrder Int
+  status        ApprovalStatus @default(PENDING)
+
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentId String
+
+  approver   User   @relation("UserApprovals", fields: [approverId], references: [id])
+  approverId String
+
+  comments   Comment[]
+  approvedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([documentId])
+  @@index([approverId])
+  @@index([documentId, sequenceOrder])
+}
+
+model Comment {
+  id      String @id @default(cuid())
+  content String
+
+  approval   Approval @relation(fields: [approvalId], references: [id], onDelete: Cascade)
+  approvalId String
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime @default(now())
+
+  @@index([approvalId])
+  @@index([documentId])
+}
+
+model Notification {
+  id      String           @id @default(cuid())
+  type    NotificationType
+  message String
+  read    Boolean          @default(false)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  documentId String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Template {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id])
+  type      String // CAPEX or OPEX
+  name      String // Template name
+  formData  Json // Stores the form data
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  documents Document[] // Documents created from this template
+  steps     TemplateStep[]
+
+  @@index([userId])
+}
+
+model TemplateStep {
+  id         String   @id @default(cuid())
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  templateId String
+
+  approver   User   @relation(fields: [approverId], references: [id])
+  approverId String
+
+  sequenceOrder Int
+  createdAt     DateTime @default(now())
+}
+
+model Audit {
+  id         String   @id @default(cuid())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  action    AuditAction
+  details   String?
+  createdAt DateTime    @default(now())
+
+  @@index([documentId])
+}
+
+model CapexForm {
+  id         String   @id @default(cuid())
+  documentId String   @unique
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  // Basic Information
+  title          String
+  unit           String
+  location       String
+  projectManager String
+  projectHead    String
+  requestDate    DateTime @default(now())
+  priority       String
+  budgetType     String // Budget/Unbudget
+
+  // Project Details
+  description          String   @db.Text
+  projectStart         DateTime
+  projectEnd           DateTime
+  oldAssets            String   @db.Text
+  technicalSuitability String   @db.Text
+  compliance           String   @db.Text
+  implications         String   @db.Text
+
+  // Cost and Planning
+  costTable          Json // Stores the cost breakdown table
+  economicViability  String @db.Text
+  spendingPlan       Json // Stores the spending plan table
+  additionalComments String @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([documentId])
+}
