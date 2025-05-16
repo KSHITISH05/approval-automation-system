@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
+import { Prisma } from "@prisma/client";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -44,7 +45,6 @@ export async function POST(req: NextRequest, { params }: { params: { documentId:
         type: oldDoc.type,
         status: "PENDING",
         initiatorId: userId,
-        previousVersionId: oldDoc.id,
       },
     });
 
@@ -68,9 +68,9 @@ export async function POST(req: NextRequest, { params }: { params: { documentId:
           technicalSuitability: oldDoc.capexForm.technicalSuitability,
           compliance: oldDoc.capexForm.compliance,
           implications: oldDoc.capexForm.implications,
-          costTable: oldDoc.capexForm.costTable,
+          costTable: oldDoc.capexForm.costTable === null ? Prisma.JsonNull : oldDoc.capexForm.costTable as Prisma.InputJsonValue,
           economicViability: oldDoc.capexForm.economicViability,
-          spendingPlan: oldDoc.capexForm.spendingPlan,
+          spendingPlan: oldDoc.capexForm.spendingPlan === null ? Prisma.JsonNull : oldDoc.capexForm.spendingPlan as Prisma.InputJsonValue,
           additionalComments: oldDoc.capexForm.additionalComments,
         },
       });

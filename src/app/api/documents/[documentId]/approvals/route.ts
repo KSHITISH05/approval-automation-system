@@ -8,12 +8,12 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function GET(
   request: Request,
-  { params }: { params: { documentId: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     // Await the params object before accessing documentId
     const resolvedParams = await params;
-    const documentId = resolvedParams.documentId;
+    const documentId = resolvedParams.id;
     
     const approvals = await prisma.approval.findMany({
       where: { documentId },
