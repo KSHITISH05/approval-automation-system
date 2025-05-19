@@ -50,3 +50,45 @@ export default function Navigation() {
     </nav>
   );
 } 
+/*
+This component implements a navigation sidebar for the application with the following features:
+
+1. Layout Structure:
+   - Fixed width sidebar (w-64) with minimum full height (min-h-screen)
+   - Dark gray background (bg-gray-800) with white text
+   - Padding on all sides (p-4)
+
+2. Logo/Header Section:
+   - Contains "MP Birla" text
+   - Flex container with spacing between items
+   - Large text size and bold font weight
+
+3. Navigation Menu:
+   - Vertical list of navigation links with consistent spacing (space-y-2)
+   - Links include:
+     - Dashboard
+     - New Request 
+     - Templates
+     - Approvals
+   - Each link has:
+     - Block display taking full width
+     - Consistent padding (px-4 py-2)
+     - Rounded corners
+     - Hover effect with slightly lighter background (hover:bg-gray-700)
+   - Uses Next.js Link component for client-side navigation
+
+4. Logout Button:
+   - Styled to match navigation links
+   - Full width with left-aligned text
+   - onClick handler for logout functionality
+   - Currently logs to console (placeholder)
+
+5. Spacing:
+   - Vertical spacing between sections (space-y-6)
+   - Consistent horizontal/vertical padding on items
+   - Space between logo elements (space-x-2)
+
+The navigation provides the main sidebar menu structure for authenticated users,
+with clear visual hierarchy and interactive states. The styling matches a dark theme
+with hover effects for better user interaction feedback.
+*/

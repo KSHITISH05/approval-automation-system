@@ -1,3 +1,4 @@
+// src/app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
         firstName,
         lastName,
-        department,
+        // department,
       },
     });
 
@@ -39,3 +40,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
+/*
+This API route handles user registration. Here's what it does:
+
+1. Input Validation:
+   - Checks required fields are present
+   - Returns 400 Bad Request if missing fields
+
+2. User Existence Check:
+   - Checks if user already exists in database
+   - Returns 409 Conflict if user already registered
+
+3. Password Hashing:
+   - Hashes password using bcrypt
+   - Uses 10 rounds of salt
+
+4. User Creation:
+   - Creates new user in database
+
+5. Response Structure:
+   - Returns JSON response with:
+     * success status
+     * user ID
+   - Error responses include status codes and messages
+
+This route is essential for:
+- User registration
+- Creating new user accounts
+- Managing user authentication
+*/

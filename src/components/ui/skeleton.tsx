@@ -1,3 +1,5 @@
+// ./src/components/ui/skeleton.tsx
+
 import { cn } from "@/lib/utils"
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
@@ -11,3 +13,9 @@ function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 export { Skeleton }
+
+/*
+This is a skeleton component that uses the cn function to merge the skeleton variants with the className prop.
+It also uses the data-slot attribute to allow the skeleton to be used as a child of another component.
+
+*/

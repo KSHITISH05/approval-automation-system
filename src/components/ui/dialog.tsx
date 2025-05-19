@@ -1,3 +1,5 @@
+// ./src/components/ui/dialog.tsx
+
 "use client"
 
 import * as React from "react"
@@ -133,3 +135,10 @@ export {
   DialogTitle,
   DialogTrigger,
 }
+
+/*
+This is a dialog component that uses the DialogPrimitive.Root component to create a dialog.
+It also uses the DialogPrimitive.Trigger component to create a trigger for the dialog.
+It also uses the DialogPrimitive.Portal component to create a portal for the dialog.
+It also uses the DialogPrimitive.Close component to create a close button for the dialog.
+*/

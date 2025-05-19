@@ -1,3 +1,4 @@
+// ./src/components/Navbar.tsx
 import Link from "next/link";
 
 export default function Navbar() {
@@ -12,3 +13,44 @@ export default function Navbar() {
     </header>
   );
 } 
+
+/*
+This component implements a navigation bar (Navbar) for the web application with the following features:
+
+1. Layout Structure:
+   - Full-width header (w-full)
+   - White background (bg-white)
+   - Subtle shadow effect (shadow-sm)
+   - Padding: vertical 4 units, horizontal 6 units (py-4 px-6)
+   - Flex container with:
+     - Items centered vertically (items-center)
+     - Content spread between start and end (justify-between)
+
+2. Left Side - Branding:
+   - Company name "MP BIRLA CEMENT"
+   - Large text size (text-2xl)
+   - Bold font weight
+   - Wide letter spacing (tracking-wide)
+   - Custom dark blue color (#1a2a41)
+
+3. Right Side - Navigation Menu:
+   - Flex container with 8 units of gap spacing
+   - Base text size (text-base)
+   - Medium font weight
+   - Three navigation links:
+     - Login
+     - Help
+     - About
+   - Each link has:
+     - Hover effect changes text to blue-700
+     - Focus state matches hover state
+     - Smooth color transition (transition-colors)
+
+4. Navigation:
+   - Uses Next.js Link component for client-side routing
+   - Login link points to /login
+   - Help and About links are anchor links (#help, #about)
+
+The navbar provides the main navigation structure for the application's public pages,
+with clear branding and essential navigation links in a clean, professional design.
+*/

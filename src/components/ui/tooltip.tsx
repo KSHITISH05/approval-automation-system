@@ -1,3 +1,5 @@
+// ./src/components/ui/tooltip.tsx
+
 "use client"
 
 import * as React from "react"
@@ -59,3 +61,10 @@ function TooltipContent({
 }
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+
+/*
+This is a tooltip component that uses the TooltipPrimitive.Root component to create a tooltip.
+It also uses the TooltipPrimitive.Trigger component to create a trigger for the tooltip.
+It also uses the TooltipPrimitive.Content component to create a content for the tooltip.
+
+*/

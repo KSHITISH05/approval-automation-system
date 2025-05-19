@@ -1,3 +1,4 @@
+// ./src/components/CapexOpexFormDialog.tsx
 "use client";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -43,3 +44,36 @@ export default function CapexOpexFormDialog({ open, onOpenChange }: { open: bool
     </Dialog>
   );
 } 
+/*
+This component creates a dialog/modal for initiating new CAPEX (Capital Expenditure) or OPEX (Operating Expenditure) requests.
+
+Key features:
+- Uses the Dialog component from shadcn/ui for the modal functionality
+- Maintains state for switching between CAPEX and OPEX forms using useState
+- Provides tab-like buttons to toggle between CAPEX and OPEX views
+- Placeholder sections for the actual form fields
+
+Component props:
+- open: boolean - Controls dialog visibility 
+- onOpenChange: (boolean) => void - Callback when dialog open state changes
+
+Flow:
+1. Dialog opens when 'open' prop is true
+2. User can switch between CAPEX/OPEX using the toggle buttons
+3. Different form fields are shown based on selected type
+4. Form fields are currently placeholder text
+5. Dialog can be closed via the close button or clicking outside
+
+The component uses shadcn/ui components:
+- Dialog, DialogContent, DialogHeader, DialogTitle for the modal
+- Button for the toggle buttons with variant styling
+
+State management:
+- formType state tracks current selected form type ("CAPEX" | "OPEX")
+- setFormType updates the form type when toggle buttons are clicked
+
+Styling:
+- Uses Tailwind CSS classes for layout and spacing
+- Button variants change based on selected state
+- max-w-2xl class limits dialog width
+*/

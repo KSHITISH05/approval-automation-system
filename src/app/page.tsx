@@ -1,3 +1,7 @@
+
+
+// ./src/app/page.tsx
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -171,3 +175,47 @@ export default function LandingPage() {
     </main>
   );
 }
+/*
+This is the landing page (home page) of the MP Birla Cement approval system. Here's a detailed breakdown:
+
+1. Page Structure:
+   - Uses Next.js "use client" directive for client-side rendering
+   - Implements a responsive layout with flexbox
+   - Contains navbar, hero section, and footer components
+
+2. Navigation Bar:
+   - Displays company logo and name
+   - Provides navigation links for Login, Help, and About
+   - Responsive design that adapts to different screen sizes
+
+3. Hero Section:
+   - Welcome message and introduction
+   - Efficiency highlight explaining system benefits
+   - Responsive layout that switches between column/row based on screen size
+
+4. Image Slideshow:
+   - Auto-advancing slideshow of plant images
+   - Uses React useState and useEffect for state management
+   - Images cycle every 5 seconds
+   - Contains 4 different plant photos
+
+5. Footer Section:
+   - Company logo
+   - Social media links (Facebook, Twitter/X, Instagram, LinkedIn)
+   - SVG icons with hover effects
+   - Secondary navigation (Privacy Policy, Terms, Contact)
+   - Responsive layout that adapts to mobile/desktop views
+
+6. Styling:
+   - Uses Tailwind CSS for styling
+   - Implements responsive design patterns
+   - Consistent color scheme (blue-900 for headings, gray-600 for text)
+   - Hover effects on interactive elements
+
+This page serves as the main entry point for users, providing:
+- Brand representation
+- Easy access to authentication
+- Visual showcase of facilities
+- Social media presence
+- Essential navigation and legal links
+*/

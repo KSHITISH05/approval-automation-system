@@ -29,6 +29,9 @@
 //   }
 // }
 
+// /src/app/api/approvals/pending/route.ts
+
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
@@ -94,3 +97,36 @@ export async function GET(req: NextRequest) {
   }
 }
 
+/*
+This API route handles fetching pending approvals for authenticated approvers. Here's what it does:
+
+1. Approval Fetching:
+   - Retrieves all approvals assigned to the authenticated user
+   - Includes related document information
+   - Orders results by creation date (newest first)
+   - Filters to only show approvals where the user is an approver
+
+2. Current Turn Logic:
+   - For each approval, determines if it's currently this approver's turn
+   - Checks pending approvals for each document
+   - Sets isCurrentTurn flag if this approval is first in pending queue
+   - This helps UI show which approvals need immediate attention
+
+3. Response Structure:
+   - Returns JSON with:
+     * success status
+     * array of approvals with isCurrentTurn flag
+     * each approval includes full document details
+   - Error responses include status codes and messages
+
+4. Security:
+   - Only returns approvals for authenticated user
+   - Validates user has approver access
+   - Handles errors appropriately
+
+This route is crucial for:
+- Showing approvers their pending tasks
+- Indicating which approvals need immediate action
+- Managing approval workflow queue
+- Maintaining approval sequence order
+*/

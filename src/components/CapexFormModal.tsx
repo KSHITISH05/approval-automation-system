@@ -1,3 +1,4 @@
+// ./src/components/CapexFormModal.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -762,3 +763,29 @@ export default function CapexFormModal({ onClose, onSubmit, type }: CapexFormMod
     </div>
   );
 } 
+
+/*
+This component is a modal form for handling Capital Expenditure (CAPEX) requests. Here's what it does:
+
+1. Approver Management:
+   - Displays a list of selected approvers who need to review the CAPEX request
+   - Each approver entry shows their full name and email
+   - Provides controls to:
+     * Reorder approvers using up/down arrows (moveApprover function)
+     * Remove approvers from the list (removeApprover function)
+
+2. Form Submission:
+   - Has a form structure with a submit button
+   - The submit button triggers form submission with a blue styling
+   - Form likely collects CAPEX request details (amount, description, etc.)
+
+3. UI/UX Features:
+   - Clean layout with proper spacing and alignment
+   - Visual feedback for interactive elements (hover states)
+   - Disabled states for movement controls when at list boundaries
+   - Responsive design with appropriate padding and margins
+   - Clear visual hierarchy with background colors and text styling
+
+This modal is crucial for setting up the approval workflow for capital expenditure requests,
+ensuring proper authorization chain and data collection for financial planning.
+*/

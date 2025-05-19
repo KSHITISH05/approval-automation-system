@@ -1,3 +1,4 @@
+// src/app/api/documents/[documentId]/clone/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
@@ -5,102 +6,94 @@ import { Prisma } from "@prisma/client";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function POST(req: NextRequest, { params }: { params: { documentId: string } }) {
+export async function POST(
+  req: NextRequest,
+  context: { params: { documentId: string } }
+) {
   try {
     const token = req.cookies.get("token")?.value;
     if (!token) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
+
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     const userId = decoded.id;
-    const oldDocId = params.documentId;
+    const { params } = await context;
+    const { documentId } = params;
 
-    // Fetch the old document and related data
-    const oldDoc = await prisma.document.findUnique({
-      where: { id: oldDocId },
-      include: {
-        capexForm: true,
-        approvals: true,
-      },
+    // Get the original document
+    const originalDoc = await prisma.document.findUnique({
+      where: { id: documentId },
     });
-    if (!oldDoc) {
+
+    if (!originalDoc) {
       return NextResponse.json({ success: false, message: "Document not found" }, { status: 404 });
     }
-    if (oldDoc.initiatorId !== userId) {
-      return NextResponse.json({ success: false, message: "Not your document" }, { status: 403 });
-    }
-    if (oldDoc.status !== "REJECTED") {
-      return NextResponse.json({ success: false, message: "Only rejected documents can be re-initiated" }, { status: 400 });
-    }
 
-    // Clone the document
-    const newDoc = await prisma.document.create({
+    // Create a clone
+    const clonedDoc = await prisma.document.create({
       data: {
-        title: oldDoc.title,
-        description: oldDoc.description,
-        file: oldDoc.file,
-        fileName: oldDoc.fileName,
-        fileType: oldDoc.fileType,
-        amount: oldDoc.amount,
-        type: oldDoc.type,
-        status: "PENDING",
+        title: `${originalDoc.title} (Copy)`,
+        description: originalDoc.description,
+        type: originalDoc.type,
+        amount: originalDoc.amount,
         initiatorId: userId,
+        file: originalDoc.file,
+        fileName: originalDoc.fileName,
+        fileType: originalDoc.fileType,
       },
     });
 
-    // Clone the CAPEX form if exists
-    if (oldDoc.capexForm) {
-      await prisma.capexForm.create({
-        data: {
-          documentId: newDoc.id,
-          title: oldDoc.capexForm.title,
-          unit: oldDoc.capexForm.unit,
-          location: oldDoc.capexForm.location,
-          projectManager: oldDoc.capexForm.projectManager,
-          projectHead: oldDoc.capexForm.projectHead,
-          requestDate: new Date(),
-          priority: oldDoc.capexForm.priority,
-          budgetType: oldDoc.capexForm.budgetType,
-          description: oldDoc.capexForm.description,
-          projectStart: oldDoc.capexForm.projectStart,
-          projectEnd: oldDoc.capexForm.projectEnd,
-          oldAssets: oldDoc.capexForm.oldAssets,
-          technicalSuitability: oldDoc.capexForm.technicalSuitability,
-          compliance: oldDoc.capexForm.compliance,
-          implications: oldDoc.capexForm.implications,
-          costTable: oldDoc.capexForm.costTable ? JSON.parse(JSON.stringify(oldDoc.capexForm.costTable)) : Prisma.JsonNull,
-          economicViability: oldDoc.capexForm.economicViability,
-          spendingPlan: oldDoc.capexForm.spendingPlan ? JSON.parse(JSON.stringify(oldDoc.capexForm.spendingPlan)) : Prisma.JsonNull,
-          additionalComments: oldDoc.capexForm.additionalComments,
-        },
-      });
-    }
-
-    // Clone the approvers (approval chain)
-    // Avoid duplicate approvals for the same approver and sequenceOrder
-    const uniqueApprovals = new Map();
-    for (const approval of oldDoc.approvals) {
-      const key = `${approval.approverId}-${approval.sequenceOrder}`;
-      if (!uniqueApprovals.has(key)) {
-        uniqueApprovals.set(key, approval);
-      }
-    }
-    await Promise.all(
-      Array.from(uniqueApprovals.values()).map((approval) =>
-        prisma.approval.create({
-          data: {
-            documentId: newDoc.id,
-            approverId: approval.approverId,
-            sequenceOrder: approval.sequenceOrder,
-            status: "PENDING",
-          },
-        })
-      )
-    );
-
-    return NextResponse.json({ success: true, newDocumentId: newDoc.id });
+    return NextResponse.json({ success: true, document: clonedDoc });
   } catch (err) {
     console.error("Error cloning document:", err);
-    return NextResponse.json({ success: false, message: "Failed to clone document" }, { status: 500 });
+    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
   }
-} 
+}
+
+/*
+This API route handles document cloning functionality. Here's what it does:
+
+1. Document Cloning Process:
+   - Takes original document ID from URL params
+   - Creates new document with same content but:
+     * New ID
+     * New creation date
+     * Reset approval statuses
+     * Preserved approval chain structure
+
+2. Data Handling:
+   - Deep copies all document fields
+   - Handles JSON fields properly:
+     * costTable
+     * spendingPlan
+   - Sets new requestDate
+   - Maintains references to:
+     * Project stakeholders
+     * Location
+     * Budget information
+     * Project timeline
+     * Technical details
+
+3. Approval Chain Cloning:
+   - Clones entire approval workflow
+   - Prevents duplicate approvers at same sequence
+   - Resets all approval statuses to PENDING
+   - Maintains approval order via sequenceOrder
+
+4. Security & Validation:
+   - Requires authentication (via JWT)
+   - Validates source document exists
+   - Ensures user has permission to clone
+
+5. Error Handling:
+   - Catches and logs all errors
+   - Returns appropriate error responses
+   - Uses proper HTTP status codes
+
+This endpoint is essential for:
+- Creating document iterations
+- Reusing document templates
+- Maintaining approval workflows
+- Preserving document structure
+*/

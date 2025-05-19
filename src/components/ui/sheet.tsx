@@ -1,3 +1,5 @@
+// ./src/components/ui/sheet.tsx
+
 "use client"
 
 import * as React from "react"
@@ -137,3 +139,10 @@ export {
   SheetTitle,
   SheetDescription,
 }
+
+/*
+This is a sheet component that uses the SheetPrimitive.Root component to create a sheet.
+It also uses the SheetPrimitive.Trigger component to create a trigger for the sheet.
+It also uses the SheetPrimitive.Close component to create a close button for the sheet.
+
+*/

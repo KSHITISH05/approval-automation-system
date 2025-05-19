@@ -1,3 +1,4 @@
+// ./src/components/ui/sidebar.tsx
 "use client"
 
 import * as React from "react"
@@ -724,3 +725,10 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+/*
+This is a sidebar component that uses the SidebarPrimitive.Root component to create a sidebar.
+It also uses the SidebarPrimitive.Trigger component to create a trigger for the sidebar.
+It also uses the SidebarPrimitive.Rail component to create a rail for the sidebar.
+
+*/

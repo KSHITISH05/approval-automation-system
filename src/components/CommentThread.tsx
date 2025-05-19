@@ -53,11 +53,15 @@ export default function CommentThread({ documentId, approvalId }: Props) {
         comment: Comment;
       }
 
-      const res = await axios.post<AddCommentResponse>("/api/comments/add", {
-        documentId,
-        approvalId,
+      // Only include approvalId if it is a non-empty string
+      const payload: any = {
         content: newComment,
-      });
+      };
+      if (approvalId && approvalId !== "") {
+        payload.approvalId = approvalId;
+      }
+
+      const res = await axios.post<AddCommentResponse>(`/api/comments/${documentId}`, payload);
       if (res.data.success) {
         setComments((prev) => [...prev, res.data.comment]);
         setNewComment("");
@@ -109,3 +113,44 @@ export default function CommentThread({ documentId, approvalId }: Props) {
     </div>
   );
 }
+/*
+This component implements a comment thread/discussion system with the following features:
+
+1. Display:
+- Shows a list of comments in a scrollable container (max height 60)
+- Each comment shows:
+  - User's full name (or "Unknown User" if not available) 
+  - Timestamp in localized format
+  - Comment content
+- Loading state shows "Loading..." while fetching comments
+
+2. Interaction:
+- Has an input field for typing new comments
+- Post button to submit new comments
+- Comments are stored with user info and timestamp
+
+3. State Management:
+- Maintains state for:
+  - List of comments
+  - New comment text input
+  - Loading state while fetching
+- Updates comment list in real-time when new comments are added
+
+4. Styling:
+- Uses Tailwind CSS for styling
+- Comments area has a subtle background and border
+- Scrollable comment list with max height
+- Input field and button styled consistently
+- Responsive layout with flex positioning
+
+5. Error Handling:
+- Catches and logs errors during comment submission
+- Provides visual feedback during loading
+
+Props:
+- documentId: ID of the document being commented on
+- approvalId: ID of the approval (optional)
+
+The component provides a complete comment thread interface for users to view 
+and add comments in a clean, organized format.
+*/

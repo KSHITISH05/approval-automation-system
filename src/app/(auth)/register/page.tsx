@@ -1,3 +1,4 @@
+// /src/app/(auth)/register/page.tsx
 "use client";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -127,3 +128,20 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+// This file defines a React functional component for a registration page.
+// The component uses TypeScript for type safety and React hooks for state management.
+
+// The file likely imports React and useState (not shown in the excerpt).
+// It also defines an array of department names (e.g., "Sales", "Marketing") for use in a dropdown or selection field.
+
+// The RegisterPage component manages form state for user registration.
+// It tracks user input for first name, last name, email, password, and department using the formData state object.
+
+// message state is used to display feedback to the user (e.g., success or error messages).
+// open state is likely used to control the visibility of a modal, alert, or notification.
+
+// handleSubmit is an asynchronous function that handles the form submission event.
+// It prevents the default form submission behavior (page reload) and will likely send the form data to a backend API for registration (implementation not shown in the excerpt).
+
+// The component will render a registration form, handle user input, and provide feedback based on the registration outcome.

@@ -1,3 +1,4 @@
+// ./src/components/ui/input.tsx
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -19,3 +20,9 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
 }
 
 export { Input }
+
+/*
+This is an input component that uses the cn function to merge the input variants with the className prop.
+It also uses the data-slot attribute to allow the input to be used as a child of another component.
+
+*/

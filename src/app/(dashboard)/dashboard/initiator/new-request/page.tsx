@@ -1,3 +1,5 @@
+// src/app/(dashboard)/dashboard/initiator/new-request/page.tsx
+
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -53,3 +55,31 @@ export default function NewRequestPage() {
     </div>
   );
 }
+
+/*
+This code implements a form page for initiating new CAPEX or OPEX requests:
+
+1. The page allows users to switch between CAPEX and OPEX form types using toggle buttons
+   at the top of the page.
+
+2. For CAPEX requests:
+   - Uses a CapexFormModal component to collect form data
+   - On submit, sends a POST request to /api/forms/capex/submit with the form data
+   - Shows success/failure alerts and redirects back to initiator dashboard on success
+
+3. For OPEX requests:
+   - Currently shows a placeholder message
+   - Needs implementation of actual OPEX form component
+
+4. The form type state is managed using useState hook, defaulting to "CAPEX"
+
+5. The layout uses:
+   - Max width container with auto margins
+   - Heading for the page title
+   - Button group for form type selection
+   - Conditional rendering based on selected form type
+
+This page ties into the larger approval workflow system, allowing initiators
+to create new approval requests that will be routed through approvers based
+on the document type and approval trail configuration.
+*/

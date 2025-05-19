@@ -1,3 +1,4 @@
+// src/app/api/notifications/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
@@ -60,3 +61,44 @@ export async function POST(req: NextRequest) {
     );
   }
 } 
+
+/*
+This API route handles notification management with two main endpoints:
+
+1. GET /api/notifications
+   - Fetches recent notifications for authenticated user
+   - Authentication:
+     * Requires valid JWT token from cookies
+     * Extracts userId from token
+     * Returns 401 if unauthorized
+   - Notification Retrieval:
+     * Gets last 30 notifications for user
+     * Orders by creation date (newest first)
+     * Returns notification array in response
+   - Error Handling:
+     * Catches and logs fetch errors
+     * Returns appropriate error responses
+     * Uses proper HTTP status codes
+
+2. POST /api/notifications  
+   - Marks specified notifications as read
+   - Authentication:
+     * Validates JWT token
+     * Gets userId from decoded token
+     * Ensures user owns notifications
+   - Update Process:
+     * Takes array of notification IDs
+     * Validates ID array exists and not empty
+     * Updates read status to true
+     * Only updates notifications owned by user
+   - Error Handling:
+     * Handles invalid/missing IDs
+     * Returns meaningful error messages
+     * Logs update errors
+
+This endpoint is essential for:
+- Managing user notifications
+- Tracking read/unread status
+- Displaying notification history
+- Maintaining notification state
+*/

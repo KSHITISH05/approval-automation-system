@@ -49,3 +49,48 @@ export default function InitiatorSidebar() {
     </aside>
   );
 }
+/*
+This component implements a sidebar navigation menu for the initiator dashboard with the following features:
+
+1. Layout Structure:
+   - Full height sidebar (h-screen) with fixed width of 64 units (w-64)
+   - Dark blue background (#102132) with white text
+   - Flex column layout with space between content
+   - Padding on all sides (py-8 px-4)
+
+2. Header Section:
+   - Company logo and name at the top
+   - Flex layout with gap spacing
+   - MP BIRLA CEMENT branding with bold text and wide tracking
+
+3. Navigation Menu:
+   - List of navigation links defined in navLinks array:
+     - Dashboard
+     - My Approvals  
+     - Documents
+     - Reports
+     - Settings
+   - Each link has:
+     - Flex layout with gap spacing
+     - Padding and rounded corners
+     - Hover effect (white/5 background)
+     - Active state shows:
+       - Slightly lighter background (white/10)
+       - Semi-bold font weight
+   - Uses Next.js Link component for client-side navigation
+   - Active link detection using usePathname hook
+
+4. Logout Section:
+   - Positioned at bottom of sidebar
+   - Red text color with logout icon
+   - Hover effect matches other links
+   - Uses Lucide icon component
+
+5. Client-Side Features:
+   - Uses "use client" directive for client-side interactivity
+   - Tracks current route with usePathname
+   - Updates active link styles based on current path
+
+The sidebar provides the main navigation structure for initiator users,
+with clear visual hierarchy and interactive states to indicate current location.
+*/

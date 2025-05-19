@@ -1,3 +1,4 @@
+// src/components/ui/button.tsx
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -57,3 +58,11 @@ function Button({
 }
 
 export { Button, buttonVariants }
+
+/*
+This is a button component that uses the cva library to create a button with different variants and sizes.
+It also uses the cn function to merge the button variants with the className prop.
+It also uses the Slot component to allow the button to be used as a child of another component.
+It also uses the data-slot attribute to allow the button to be used as a child of another component.
+
+*/

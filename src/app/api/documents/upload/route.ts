@@ -1,3 +1,4 @@
+// src/app/api/documents/upload/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { writeFile } from "fs/promises";
@@ -78,3 +79,53 @@ export async function POST(req: NextRequest) {
 }
 
 
+/*
+This API route handles document upload functionality. Here's what it does:
+
+1. Document Upload Process:
+   - Receives form data with:
+     * Document title
+     * Description 
+     * Amount
+     * Document type
+     * File attachment
+     * List of approvers
+   - Validates required fields are present
+   - Processes file upload
+
+2. File Handling:
+   - Converts uploaded file to buffer
+   - Generates unique filename using UUID
+   - Saves file to /public/uploads directory
+   - Stores file metadata (name, type) in DB
+   - Keeps file buffer in DB for retrieval
+
+3. Database Operations:
+   - Verifies initiator exists in DB
+   - Creates new document record with:
+     * Basic document info (title, desc, amount, type)
+     * File data and metadata
+     * Link to initiator
+   - Sets up approval chain by:
+     * Creating approval records for each approver
+     * Setting sequence order for approvals
+     * Linking approvers to document
+
+4. Security & Validation:
+   - Requires authentication (handled by middleware)
+   - Validates initiator exists
+   - Ensures required fields present
+   - Handles file safely
+
+5. Error Handling:
+   - Catches and logs upload errors
+   - Returns appropriate error responses
+   - Uses proper HTTP status codes
+   - Provides meaningful error messages
+
+This endpoint is essential for:
+- Document submission
+- File upload handling
+- Approval workflow creation
+- Document record management
+*/

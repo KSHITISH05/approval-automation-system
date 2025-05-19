@@ -1,3 +1,5 @@
+// /src/app/(dashboard)/dashboard/templates/page.tsx
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -108,3 +110,49 @@ export default function TemplatesPage() {
     </div>
   );
 } 
+
+/*
+This page implements a Template Management interface for the approval workflow system. Here's a detailed breakdown:
+
+1. Purpose:
+   - Displays a list of saved document templates that users can reuse
+   - Allows users to quickly create new requests based on existing templates
+   - Provides template management functionality (viewing, using, deleting)
+
+2. UI Components:
+   - Header section with page title and "New Request" button
+   - Grid layout for displaying template cards
+   - Empty state message when no templates exist
+   - Individual template cards showing:
+     * Template name and type
+     * Creation date
+     * Action buttons (Use Template, Delete)
+
+3. Template Card Features:
+   - Visual hierarchy with template name and type prominently displayed
+   - Creation date shown for reference
+   - Two main actions:
+     * "Use Template" - Creates a new request pre-filled with template data
+     * "Delete" - Removes the template from the system
+
+4. Responsive Design:
+   - Grid layout adapts to screen size:
+     * 1 column on mobile (grid-cols-1)
+     * 2 columns on medium screens (md:grid-cols-2)
+     * 3 columns on large screens (lg:grid-cols-3)
+   - Consistent spacing and padding for readability
+
+5. User Experience:
+   - Clear call-to-action for creating new requests
+   - Helpful empty state message guiding users to create templates
+   - Quick access to template actions
+   - Visual feedback through hover states on buttons
+
+6. Integration:
+   - Connects with template management system
+   - Likely interfaces with document creation workflow
+   - Handles template CRUD operations
+
+This page serves as a central hub for template management, streamlining the process
+of creating new requests by allowing users to reuse previously saved configurations.
+*/

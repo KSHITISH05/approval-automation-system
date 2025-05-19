@@ -1,3 +1,5 @@
+// src/app/api/auth/login/route.ts
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -52,3 +54,45 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
+/*
+This API route handles user authentication/login. Here's what it does:
+
+1. Authentication Flow:
+   - Receives POST requests with email and password
+   - Validates credentials are present
+   - Checks if user exists in database
+   - Verifies password using bcrypt
+   - Generates JWT token on successful login
+
+2. JWT Token Generation:
+   - Creates signed token containing:
+     * User ID
+     * Email
+     * Role
+   - Sets expiration to 7 days
+   - Signs with secret key from env vars
+
+3. Cookie Management:
+   - Sets HTTP-only cookie with JWT token
+   - Configures secure flag for production
+   - Sets 7 day expiration
+   - Makes cookie available across site
+
+4. Security Features:
+   - Uses bcrypt for password comparison
+   - HTTP-only cookies prevent XSS
+   - Secure cookies in production
+   - Generic error messages avoid info leaks
+
+5. Error Handling:
+   - Validates required fields
+   - Handles invalid credentials
+   - Catches and logs server errors
+   - Returns appropriate status codes
+
+This route is essential for:
+- User authentication
+- Securing protected routes
+- Managing login sessions
+- Role-based access control
+*/

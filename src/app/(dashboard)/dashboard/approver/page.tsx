@@ -1,3 +1,5 @@
+// /src/app/(dashboard)/dashboard/approver/page.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -53,9 +55,19 @@ export default function ApproverDashboard() {
   const handleViewForm = async (documentId: string) => {
     try {
       const res = await fetch(`/api/forms/capex/${documentId}`);
-      const data: CapexFormResponse = await res.json();
-      if (data.success && data.data) {
-        setSelectedForm(data.data);
+      const data = await res.json();
+      if (data.success && data.capexForm) {
+        const capexForm = data.capexForm;
+        setSelectedForm({
+          ...capexForm,
+          id: capexForm.documentId,
+          documentId: capexForm.documentId,
+          fileName: capexForm.document?.fileName,
+          fileType: capexForm.document?.fileType,
+          initiator: capexForm.document?.initiator,
+          approvals: capexForm.document?.approvals,
+          status: capexForm.document?.status,
+        });
       }
     } catch (err) {
       alert("Failed to load form details");
@@ -141,3 +153,31 @@ export default function ApproverDashboard() {
 }
 
 
+// ...existing code...
+/*
+  This excerpt is from a React functional component written in TypeScript.
+  It represents the closing section of the component's JSX return statement.
+
+  - The '/>' at the top suggests the end of a self-closing JSX element, likely a component or an HTML element.
+    This could be a conditional rendering block, such as:
+      {someCondition && <SomeComponent />}
+    The closing parenthesis ')' on the previous line indicates the end of a conditional rendering expression.
+
+  - The ')}' closes the conditional rendering started earlier in the JSX.
+    In React, it's common to use curly braces '{}' to embed JavaScript expressions inside JSX.
+    The parenthesis ')' is used to close the function or expression that was opened earlier.
+
+  - '</main>' closes the main content area of the page.
+    The <main> tag is a semantic HTML5 element that represents the dominant content of the <body>.
+
+  - '</div>' closes a wrapping <div> element that likely serves as a container for the page content.
+
+  - ');' closes the return statement of the React component.
+
+  - '}' closes the body of the functional component.
+
+  - The component likely exports this function as the default export or a named export.
+
+  In summary, this code is the tail end of a React component's render output, wrapping up the main content and any conditional rendering, and closing the component definition.
+*/
+// ...existing code...

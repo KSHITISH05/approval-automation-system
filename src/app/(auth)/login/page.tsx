@@ -1,3 +1,4 @@
+// /src/app/(auth)/login/page.tsx
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -110,3 +111,25 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
+// This file defines a React functional component for a Login page using TypeScript.
+// It provides a form for users to enter their email and password, and handles authentication logic.
+//
+// Key features and flow:
+// 1. State Management:
+//    - Uses useState to manage form data (email, password) and a message for feedback.
+// 2. Form Submission:
+//    - On form submit, prevents default behavior and sends a POST request to '/api/auth/login' with the form data.
+//    - If login fails, displays an error message from the server or a default message.
+//    - If login succeeds, shows a success message and, after a short delay, fetches the current user's info from '/api/auth/me'.
+//    - Based on the user's role ('INITIATOR', 'APPROVER', or other), redirects to the appropriate dashboard page.
+// 3. UI Elements:
+//    - Uses Card and CardContent components for layout (likely from a UI library).
+//    - Includes input fields for email and password, with validation and styling.
+//    - Provides a "Forgot password?" link and a login button.
+//    - Displays a company logo and name at the bottom.
+//    - Shows feedback messages to the user after login attempts.
+//
+// Note: The component expects certain dependencies (e.g., useRouter, Card, CardContent, Button, Link, Image) to be imported from relevant libraries.
+//       It also assumes the existence of backend API endpoints for authentication.

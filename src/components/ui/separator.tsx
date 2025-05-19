@@ -1,3 +1,5 @@
+// ./src/components/ui/separator.tsx
+
 "use client"
 
 import * as React from "react"
@@ -26,3 +28,9 @@ function Separator({
 }
 
 export { Separator }
+
+/*
+This is a separator component that uses the SeparatorPrimitive.Root component to create a separator.
+It also uses the data-slot attribute to allow the separator to be used as a child of another component.
+
+*/

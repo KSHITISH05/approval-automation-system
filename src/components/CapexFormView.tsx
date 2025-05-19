@@ -1,6 +1,7 @@
+// ./src/components/CapexFormView.tsx
 "use client";
 
-import { Dialog } from "@headlessui/react";
+import { Dialog, Button } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 interface CostTableRow {
@@ -37,6 +38,8 @@ interface CapexFormData {
   fileName?: string;
   fileUrl?: string;
   id?: string;
+  documentId?: string;
+  document?: any;
   initiator?: {
     firstName: string;
     lastName: string;
@@ -276,27 +279,25 @@ export default function CapexFormView({ isOpen, onClose, data, type }: CapexForm
               </div>
             </div>
 
-            {/* 14. Additional Comments */}
-            <div>
+            {/* Additional Comments */}
+            <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="text-sm font-medium text-gray-700">Additional Comments</h3>
-              <p className="mt-1 text-gray-900 whitespace-pre-wrap">{data.additionalComments}</p>
+              <p className="mt-1 text-sm text-gray-900">{data.additionalComments}</p>
             </div>
 
-            {/* File Attachment */}
-            {data.fileName && data.id && (
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-700">Attachment</h3>
-                <a
-                  href={`/api/documents/${data.id}/file`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-1 inline-flex items-center text-blue-600 hover:text-blue-800"
+            {/* File Download Section */}
+            {data.fileName && (
+              <div className="bg-gray-50 p-4 rounded-lg mt-4">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Attached File</h3>
+                <Button
+                  onClick={() => window.open(`/api/documents/${data.id}/file`, '_blank')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
-                  {data.fileName}
-                </a>
+                  Download {data.fileName}
+                </Button>
               </div>
             )}
           </div>
@@ -305,3 +306,42 @@ export default function CapexFormView({ isOpen, onClose, data, type }: CapexForm
     </Dialog>
   );
 } 
+
+/*
+This file implements a CapexFormView component that displays a capital expenditure (CAPEX) form in a dialog/modal view. Here's a detailed breakdown:
+
+1. Component Structure:
+- Uses @headlessui/react Dialog for the modal functionality
+- Takes a CAPEX form data object as input with details like:
+  - Basic project info (title, unit, location, etc.)
+  - Project managers and heads
+  - Priority and budget type
+  - Project timeline
+  - Technical details
+  - Cost table with budget breakdowns
+  - Spending plan across months/years
+  - Additional comments and file attachments
+
+2. Key Features:
+- Displays form data in a structured, read-only view
+- Shows cost breakdown in a table format
+- Displays spending plan in a month-wise table
+- Handles file attachments with download capability
+- Uses proper formatting for currency values (₹)
+- Maintains consistent styling using Tailwind CSS
+
+3. Data Organization:
+- Uses TypeScript interfaces (CostTableRow, SpendingPlanRow, CapexFormData) 
+- Structures data hierarchically
+- Handles optional fields like file attachments
+- Includes approval workflow data
+
+4. UI Components:
+- Organized sections for different types of information
+- Responsive tables for financial data
+- Proper spacing and typography
+- Interactive elements like file download links
+
+This component serves as a detailed view for CAPEX proposals, likely used in a financial or project management system.
+*/
+

@@ -1,3 +1,4 @@
+// src/app/api/templates/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
@@ -68,3 +69,44 @@ export async function POST(req: NextRequest) {
     );
   }
 } 
+/*
+This API route handles template management with two main endpoints:
+
+1. GET /api/templates (implied from context)
+   - Fetches templates for authenticated user
+   - Authentication:
+     * Requires valid JWT token from cookies
+     * Extracts userId from token
+     * Returns 401 if unauthorized
+   - Template Retrieval:
+     * Gets all templates belonging to user
+     * Returns template array in response
+   - Error Handling:
+     * Catches and logs fetch errors
+     * Returns appropriate error responses
+     * Uses proper HTTP status codes
+
+2. POST /api/templates
+   - Creates new template for authenticated user
+   - Authentication:
+     * Validates JWT token
+     * Gets userId from decoded token
+     * Ensures user is authorized
+   - Template Creation:
+     * Takes template name, type and formData
+     * Validates required fields exist
+     * Creates new template record in database
+     * Associates template with user
+   - Error Handling:
+     * Validates required fields
+     * Returns meaningful error messages
+     * Logs creation errors
+     * Uses appropriate status codes
+
+This endpoint is essential for:
+- Managing document templates
+- Saving frequently used form configurations 
+- Organizing templates by type
+- Maintaining user-specific templates
+- Enabling template reuse
+*/

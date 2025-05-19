@@ -1,3 +1,5 @@
+// ./src/components/FeatureSection.tsx
+
 export default function FeatureSection() {
   return (
     <section className="w-full max-w-4xl mx-auto py-8 px-4 md:px-0">
@@ -30,3 +32,48 @@ export default function FeatureSection() {
     </section>
   );
 } 
+
+/*
+This component implements a Features section for a web application with the following structure and functionality:
+
+1. Layout:
+   - Full-width section with max-width constraint (max-w-4xl)
+   - Centered with auto margins (mx-auto)
+   - Responsive padding (py-8 px-4 md:px-0)
+   - Grid layout that switches from 1 column on mobile to 2 columns on medium screens
+
+2. Content Structure:
+   - Section heading "Features" styled with:
+     - Large text size (text-2xl)
+     - Bold weight
+     - Custom blue color (#1a2a41)
+     - Bottom margin spacing
+
+3. Feature Cards:
+   - Two cards displaying key features:
+     a) Approval Workflow
+     b) Dashboards
+   
+   Each card contains:
+   - White background with subtle shadow
+   - Rounded corners (rounded-xl)
+   - Light blue border
+   - Flex layout with gap spacing
+   - Icon container:
+     - Circular blue background
+     - SVG icon in darker blue
+   - Feature title in custom blue color
+
+4. Responsive Design:
+   - Single column layout on mobile devices
+   - Two column layout on medium and larger screens
+   - Consistent spacing and padding across breakpoints
+
+5. Visual Elements:
+   - Custom SVG icons for each feature
+   - Consistent color scheme using blue tones
+   - Clean, modern design with subtle shadows and borders
+
+The component provides a clear, visually appealing way to showcase the main features
+of the application while maintaining responsive behavior and visual consistency.
+*/

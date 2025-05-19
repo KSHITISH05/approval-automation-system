@@ -1,3 +1,4 @@
+// src/app/api/forms/capex/submit/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
@@ -57,10 +58,15 @@ export async function POST(request: Request) {
       },
     });
 
-    // Create Approval records for each approver
+    // Create Approval records for each approver (excluding initiator)
     if (Array.isArray(data.approvers)) {
+      // Filter out the initiator if present
+      const validApprovers = data.approvers.filter((approver: { id: string }) => approver.id !== initiatorId);
+      if (validApprovers.length === 0) {
+        return NextResponse.json({ error: "At least one approver (not yourself) is required." }, { status: 400 });
+      }
       await Promise.all(
-        data.approvers.map((approver: { id: string; sequence: number }) =>
+        validApprovers.map((approver: { id: string; sequence: number }) =>
           prisma.approval.create({
             data: {
               documentId: document.id,
@@ -82,3 +88,55 @@ export async function POST(request: Request) {
     );
   }
 } 
+
+/*
+This API route handles the submission of CAPEX (Capital Expenditure) forms. Here's a detailed breakdown:
+
+1. Form Data Processing:
+   - Receives form data including:
+     * Project details (title, location, manager, head)
+     * Priority and budget type
+     * Project description and timeline
+     * Technical assessments
+     * Cost information and spending plans
+     * Additional comments
+   - Validates required fields
+   - Processes dates into proper format
+
+2. Document Creation:
+   - Creates a new document record in database
+   - Associates it with the initiator (submitter)
+   - Stores all form fields in the CAPEX form table
+   - Links the form to the document record
+   - Handles any file attachments
+
+3. Approval Chain Setup:
+   - Takes array of approvers from submission
+   - Filters out initiator from approver list
+   - Validates at least one non-initiator approver exists
+   - Creates approval records for each approver with:
+     * Link to document
+     * Approver ID
+     * Sequence order
+     * Initial PENDING status
+   - Sets up sequential approval workflow
+
+4. Data Validation:
+   - Ensures required fields are present
+   - Validates approver list structure
+   - Checks for valid initiator
+   - Prevents self-approval
+   - Enforces business rules
+
+5. Error Handling:
+   - Catches and logs submission errors
+   - Returns appropriate error responses
+   - Uses proper HTTP status codes
+   - Provides meaningful error messages
+
+This endpoint is essential for:
+- Creating new CAPEX requests
+- Setting up approval workflows
+- Storing form data
+- Initiating document review process
+*/

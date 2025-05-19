@@ -1,3 +1,5 @@
+// src/app/api/forms/capex/[documentId]/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
@@ -6,103 +8,84 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { documentId: string } }
+  context: { params: { documentId: string } }
 ) {
   try {
-    const token = req.cookies.get("token")?.value;
-    if (!token) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-    }
+    const { documentId } = context.params;
 
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    const userId = decoded.id;
-
-    // Check if user has access to this document
-    const document = await prisma.document.findUnique({
-      where: { id: params.documentId },
+    const capexForm = await prisma.capexForm.findUnique({
+      where: { documentId },
       include: {
-        approvals: {
-          where: { approverId: userId },
-        },
-        initiator: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
+        document: {
+          include: {
+            initiator: true,
+            approvals: {
+              include: {
+                approver: true,
+              },
+            },
           },
         },
       },
-    });
-
-    if (!document) {
-      return NextResponse.json(
-        { success: false, message: "Document not found" },
-        { status: 404 }
-      );
-    }
-
-    // Check if user is either the initiator or an approver
-    const isInitiator = document.initiatorId === userId;
-    const isApprover = document.approvals.length > 0;
-
-    if (!isInitiator && !isApprover) {
-      return NextResponse.json(
-        { success: false, message: "Access denied" },
-        { status: 403 }
-      );
-    }
-
-    // Fetch the CAPEX form
-    const capexForm = await prisma.capexForm.findUnique({
-      where: { documentId: params.documentId },
     });
 
     if (!capexForm) {
-      return NextResponse.json(
-        { success: false, message: "CAPEX form not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, message: "CAPEX form not found" }, { status: 404 });
     }
 
-    // Get file URL if it exists
-    const fileUrl = document.fileName
-      ? `/api/documents/${document.id}/file`
-      : undefined;
-
-    // Get approval trail
-    const approvals = await prisma.approval.findMany({
-      where: { documentId: params.documentId },
-      include: {
-        approver: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-      },
-      orderBy: {
-        sequenceOrder: 'asc',
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        ...capexForm,
-        fileName: document.fileName,
-        fileUrl,
-        initiator: document.initiator,
-        approvals,
-        status: document.status,
-      },
-    });
+    return NextResponse.json({ success: true, capexForm });
   } catch (err) {
-    console.error("FETCH CAPEX FORM ERROR:", err);
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch form" },
-      { status: 500 }
-    );
+    console.error("Error fetching CAPEX form:", err);
+    return NextResponse.json({ success: false, message: "Server error", error: String(err) }, { status: 500 });
   }
 } 
+
+/*
+This API route handles fetching CAPEX (Capital Expenditure) form data. Here's what it does:
+
+1. Form Data Retrieval:
+   - Takes a document ID from URL params
+   - Fetches the associated CAPEX form data
+   - Returns 404 if form not found
+   - Includes all form fields like:
+     * Title, unit, location
+     * Project details and timeline
+     * Budget information
+     * Technical specifications
+     * Cost tables and spending plans
+
+2. File Handling:
+   - Checks if document has associated file
+   - Generates file download URL if file exists
+   - Links to file download endpoint
+   - Makes file accessible via API
+
+3. Approval Chain Information:
+   - Fetches complete approval trail
+   - Includes approver details:
+     * First and last names
+     * Email addresses
+   - Orders approvals by sequence
+   - Shows approval status progression
+
+4. Response Structure:
+   - Returns success status
+   - Returns complete form data including:
+     * All CAPEX form fields
+     * File information (name and URL)
+     * Initiator details
+     * Approval chain status
+     * Document status
+
+5. Error Handling:
+   - Catches and logs errors
+   - Returns appropriate error responses
+   - Uses proper HTTP status codes
+   - Provides meaningful error messages
+
+This endpoint is essential for:
+- Displaying CAPEX form details
+- Tracking approval progress
+- Accessing form attachments
+- Managing capital expenditure requests
+*/

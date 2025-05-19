@@ -1,3 +1,5 @@
+// ./src/components/ui/card.tsx
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -90,3 +92,10 @@ export {
   CardDescription,
   CardContent,
 }
+
+/*
+This is a card component that uses the cn function to merge the card variants with the className prop.
+It also uses the data-slot attribute to allow the card to be used as a child of another component.
+
+
+*/
