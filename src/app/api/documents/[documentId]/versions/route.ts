@@ -18,11 +18,12 @@ export async function GET(req: NextRequest, { params }: { params: { documentId: 
     if (!doc) return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
 
     // Walk back to the first version
-    while (doc.previousVersionId) {
-      const prev = await prisma.document.findUnique({ where: { id: doc.previousVersionId } });
+    while (doc && (doc as any).previousVersionId) {
+      const prev: Awaited<ReturnType<typeof prisma.document.findUnique>> = await prisma.document.findUnique({ where: { id: (doc as any).previousVersionId } });
       if (!prev) break;
       doc = prev;
     }
+    if (!doc) return NextResponse.json({ success: false, message: "Document not found" }, { status: 404 });
     const rootId = doc.id;
 
     // Get all versions in the chain (ordered oldest to newest)
@@ -30,8 +31,12 @@ export async function GET(req: NextRequest, { params }: { params: { documentId: 
     let current = doc;
     while (current) {
       chain.push(current);
-      const next = await prisma.document.findFirst({ where: { previousVersionId: current.id }, orderBy: { createdAt: "asc" } });
-      current = next;
+      const next = await prisma.document.findFirst({ 
+        where: { previousVersionId: current.id } as any, 
+        orderBy: { createdAt: "asc" } 
+      });
+      if (!next) break;
+      current = next as NonNullable<typeof next>;
     }
 
     return NextResponse.json({ success: true, versions: chain });

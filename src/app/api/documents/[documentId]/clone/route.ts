@@ -68,17 +68,25 @@ export async function POST(req: NextRequest, { params }: { params: { documentId:
           technicalSuitability: oldDoc.capexForm.technicalSuitability,
           compliance: oldDoc.capexForm.compliance,
           implications: oldDoc.capexForm.implications,
-          costTable: oldDoc.capexForm.costTable === null ? Prisma.JsonNull : oldDoc.capexForm.costTable as Prisma.InputJsonValue,
+          costTable: oldDoc.capexForm.costTable ? JSON.parse(JSON.stringify(oldDoc.capexForm.costTable)) : Prisma.JsonNull,
           economicViability: oldDoc.capexForm.economicViability,
-          spendingPlan: oldDoc.capexForm.spendingPlan === null ? Prisma.JsonNull : oldDoc.capexForm.spendingPlan as Prisma.InputJsonValue,
+          spendingPlan: oldDoc.capexForm.spendingPlan ? JSON.parse(JSON.stringify(oldDoc.capexForm.spendingPlan)) : Prisma.JsonNull,
           additionalComments: oldDoc.capexForm.additionalComments,
         },
       });
     }
 
     // Clone the approvers (approval chain)
+    // Avoid duplicate approvals for the same approver and sequenceOrder
+    const uniqueApprovals = new Map();
+    for (const approval of oldDoc.approvals) {
+      const key = `${approval.approverId}-${approval.sequenceOrder}`;
+      if (!uniqueApprovals.has(key)) {
+        uniqueApprovals.set(key, approval);
+      }
+    }
     await Promise.all(
-      oldDoc.approvals.map((approval) =>
+      Array.from(uniqueApprovals.values()).map((approval) =>
         prisma.approval.create({
           data: {
             documentId: newDoc.id,

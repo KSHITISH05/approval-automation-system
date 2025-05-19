@@ -22,13 +22,23 @@ export default function ApprovalCard({ approval }: { approval: Approval }) {
           Amount. ₹{approval.amount} — {approval.type}
         </p>
         <div className="mb-2 font-semibold text-black">Approval Trail</div>
-        <ol className="mb-4 pl-4 list-decimal text-gray-800">
-          {approval.approvalTrail.map((step, idx) => (
-            <li key={idx}>
-              {step.name} — <span className="font-normal">{step.status}</span>
-            </li>
-          ))}
-        </ol>
+        {(() => {
+          // Map from approver name to their latest status (last occurrence in the array)
+          const latestStatus = new Map();
+          for (const step of approval.approvalTrail) {
+            latestStatus.set(step.name, step.status);
+          }
+          // Now render each approver only once, with their latest status
+          return (
+            <ol className="mb-4 pl-4 list-decimal text-gray-800">
+              {[...latestStatus.entries()].map(([name, status], idx) => (
+                <li key={name}>
+                  {name} — <span className="font-normal">{status}</span>
+                </li>
+              ))}
+            </ol>
+          );
+        })()}
         <div className="mb-2 font-semibold text-black">Comments</div>
         <CommentThread documentId={approval.id} approvalId={approval.approvalId || ""} />
       </CardContent>
