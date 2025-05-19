@@ -8,65 +8,98 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    // Await cookies and get the token
+    // Parse FormData
+    const formData = await request.formData();
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
     const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
     const initiatorId = decoded.id;
 
-    // First create the document
+    // Extract fields
+    const title = formData.get("title");
+    const unit = formData.get("unit");
+    const location = formData.get("location");
+    const projectManager = formData.get("projectManager");
+    const projectHead = formData.get("projectHead");
+    const priority = formData.get("priority");
+    const budgetType = formData.get("budgetType");
+    const description = formData.get("description");
+    const projectStart = formData.get("projectStart");
+    const projectEnd = formData.get("projectEnd");
+    const oldAssets = formData.get("oldAssets");
+    const technicalSuitability = formData.get("technicalSuitability");
+    const compliance = formData.get("compliance");
+    const implications = formData.get("implications");
+    const economicViability = formData.get("economicViability");
+    const additionalComments = formData.get("additionalComments");
+    const costTable = JSON.parse(formData.get("costTable"));
+    const spendingPlan = JSON.parse(formData.get("spendingPlan"));
+    const approvers = JSON.parse(formData.get("approvers"));
+
+    // Extract file
+    const file = formData.get("file");
+    let fileName = null;
+    let fileType = null;
+    let fileBuffer = null;
+    if (file && typeof file === "object" && "arrayBuffer" in file) {
+      fileName = file.name;
+      fileType = file.type;
+      fileBuffer = Buffer.from(await file.arrayBuffer());
+    }
+
+    // Debug log
+    console.log("fileName:", fileName, "fileType:", fileType, "fileBuffer length:", fileBuffer?.length);
+
+    // Create document
     const document = await prisma.document.create({
       data: {
-        title: data.title,
-        description: data.description,
-        file: data.file && data.file.length ? Buffer.from(data.file) : Buffer.from([]),
-        fileType: data.fileType || "application/pdf",
-        fileName: data.fileName,
+        title,
+        description,
+        file: fileBuffer,
+        fileType: fileType || "application/pdf",
+        fileName: fileName,
         type: "CAPEX",
         status: "PENDING",
         initiatorId,
       },
     });
 
-    // Then create the CAPEX form
+    // Create CAPEX form
     const capexForm = await prisma.capexForm.create({
       data: {
         documentId: document.id,
-        title: data.title,
-        unit: data.unit,
-        location: data.location,
-        projectManager: data.projectManager,
-        projectHead: data.projectHead,
-        priority: data.priority,
-        budgetType: data.budgetType,
-        description: data.description,
-        projectStart: new Date(data.projectStart),
-        projectEnd: new Date(data.projectEnd),
-        oldAssets: data.oldAssets,
-        technicalSuitability: data.technicalSuitability,
-        compliance: data.compliance,
-        implications: data.implications,
-        costTable: data.costTable,
-        economicViability: data.economicViability,
-        spendingPlan: data.spendingPlan,
-        additionalComments: data.additionalComments,
+        title,
+        unit,
+        location,
+        projectManager,
+        projectHead,
+        priority,
+        budgetType,
+        description,
+        projectStart: new Date(projectStart),
+        projectEnd: new Date(projectEnd),
+        oldAssets,
+        technicalSuitability,
+        compliance,
+        implications,
+        costTable,
+        economicViability,
+        spendingPlan,
+        additionalComments,
       },
     });
 
     // Create Approval records for each approver (excluding initiator)
-    if (Array.isArray(data.approvers)) {
-      // Filter out the initiator if present
-      const validApprovers = data.approvers.filter((approver: { id: string }) => approver.id !== initiatorId);
+    if (Array.isArray(approvers)) {
+      const validApprovers = approvers.filter((approver) => approver.id !== initiatorId);
       if (validApprovers.length === 0) {
         return NextResponse.json({ error: "At least one approver (not yourself) is required." }, { status: 400 });
       }
       await Promise.all(
-        validApprovers.map((approver: { id: string; sequence: number }) =>
+        validApprovers.map((approver) =>
           prisma.approval.create({
             data: {
               documentId: document.id,
@@ -79,15 +112,12 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ document });
+    return NextResponse.json({ success: true, document });
   } catch (error) {
-    console.error("Error submitting form:", error);
-    return NextResponse.json(
-      { error: "Failed to submit form" },
-      { status: 500 }
-    );
+    console.error("Error submitting CAPEX form:", error);
+    return NextResponse.json({ error: "Failed to submit form", details: String(error) }, { status: 500 });
   }
-} 
+}
 
 /*
 This API route handles the submission of CAPEX (Capital Expenditure) forms. Here's a detailed breakdown:
